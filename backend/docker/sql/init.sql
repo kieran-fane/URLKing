@@ -1,0 +1,8 @@
+
+DROP TABLE urls IF EXISTS urls;
+
+CREATE TABLE urls (
+	slug UNIQUE NOT NULL,
+	long_url UNIQUE NOT NULL
+);
+
