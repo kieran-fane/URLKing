@@ -1,8 +1,9 @@
 
-DROP TABLE urls IF EXISTS urls;
+
+DROP TABLE IF EXISTS urls;
 
 CREATE TABLE urls (
-	slug UNIQUE NOT NULL,
-	long_url UNIQUE NOT NULL
+	slug TEXT UNIQUE NOT NULL,
+	long_url TEXT UNIQUE NOT NULL
 );
 

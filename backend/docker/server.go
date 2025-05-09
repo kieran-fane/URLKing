@@ -8,7 +8,8 @@ import (
 	"backend/db"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
-	"github.com/rs/xid"
+	"github.com/labstack/echo/v4/middleware"
+	// "github.com/rs/xid"
 )
 
 type App struct {
@@ -21,6 +22,11 @@ func main() {
 
 	app := &App{DB: pool}
 	e := echo.New()
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+	}))
 
 	e.POST("/shorten", app.shortenURL)
 	e.GET("/:hashslug", app.getURL)
@@ -49,16 +55,7 @@ func (app *App) shortenURL(c echo.Context) error {
 	hash := sha256.Sum256([]byte(req.URL))
 	slug := hex.EncodeToString(hash[:])[:8]
 
-	err := db.InsertURL(app.DB, slug, req.URL)
-	if err != nil {
-		slug = xid.New().String()
-		err = db.InsertURL(app.DB, slug, req.URL)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError,
-				map[string]string{"error": "inserting into db failed"})
-		}
-	}
-
+	_ = db.InsertURL(app.DB, slug, req.URL)
 	return c.JSON(http.StatusOK, ShortenResponse{Slug: slug, URL: req.URL})
 }
 
@@ -70,6 +67,6 @@ func (app *App) getURL(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "slug not found"})
 	}
 
-	return c.Redirect(http.StatusFound, originalURL)
+	return c.JSON(http.StatusOK, map[string]string{"url": originalURL})
 }
 
