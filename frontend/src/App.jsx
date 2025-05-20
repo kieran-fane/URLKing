@@ -109,7 +109,7 @@ function App() {
       </Box>
 
       <Typography variant="body2" sx={{ textAlign: 'center', mt: 'auto' }}>
-        © 2025 URLKing
+        © 2025 Kieran Fane
       </Typography>
     </Paper>
   );
